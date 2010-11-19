@@ -3,13 +3,6 @@ require 'mongoid'
 class CachedFile
   include Mongoid::Document
 
-  Mongoid.configure do |config|
-    name = "hoccer_development"
-    host = "localhost"
-    config.master = Mongo::Connection.new.db(name)
-    config.persist_in_safe_mode = true
-  end
-
   field :api_key
   field :original_filename
   field :filepath
@@ -20,20 +13,21 @@ class CachedFile
 
   def self.create options
     uuid              = UUID.generate(:compact)
-    extension         = File.extname( options[:filename] )
+    extension         = File.extname( options[:file][:filename] )
     file_path         = File.join( file_dir, uuid ) + extension
+    expires_in        = options[:expires_in].to_i || 7
 
     File.open(file_path, 'wb') do |file|
-      file.write(options[:tempfile].read)
+      file.write(options[:file][:tempfile].read)
     end
 
     super(
       :uuid               => uuid,
-      :original_filename  => options[:filename],
+      :original_filename  => options[:file][:filename],
       :filepath           => file_path,
-      :content_type       => options[:type],
+      :content_type       => options[:file][:type],
       :created_at         => Time.now,
-      :expires_at         => Time.now + 7.seconds
+      :expires_at         => Time.now + expires_in.seconds
     )
   end
 

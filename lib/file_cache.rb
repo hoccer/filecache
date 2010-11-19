@@ -7,7 +7,7 @@ module Hoccer
 
     post '/' do
       authorized_request do
-        CachedFile.create params[:data]
+        CachedFile.create params[:upload]
       end
     end
 
