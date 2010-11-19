@@ -10,22 +10,22 @@ class CachedFile
   field :created_at,  :type => DateTime
   field :expires_at,  :type => DateTime
 
-
   def self.create options
+
     uuid              = UUID.generate(:compact)
-    extension         = File.extname( options[:file][:filename] )
+    extension         = File.extname( options[:filename] )
     file_path         = File.join( file_dir, uuid ) + extension
     expires_in        = options[:expires_in].to_i || 7
 
     File.open(file_path, 'wb') do |file|
-      file.write(options[:file][:tempfile].read)
+      file.write(options[:tempfile].read)
     end
 
     super(
       :uuid               => uuid,
-      :original_filename  => options[:file][:filename],
+      :original_filename  => options[:filename],
       :filepath           => file_path,
-      :content_type       => options[:file][:type],
+      :content_type       => options[:type],
       :created_at         => Time.now,
       :expires_at         => Time.now + expires_in.seconds
     )

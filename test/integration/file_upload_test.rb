@@ -17,16 +17,17 @@ class FileUploadTest < Test::Unit::TestCase
 
   test "uploading a file" do
     assert_difference "CachedFile.count", +1 do
-      post "/", :upload => {
-        :file => Rack::Test::UploadedFile.new(
-          "/Users/hukl/Desktop/Cleanup/Image_23.jpg",
-          "image/jpeg"
-        ),
-        :expires_in => 10
+      post "/", {:upload => Rack::Test::UploadedFile.new(
+        "/Users/hukl/Desktop/Cleanup/Image_23.jpg",
+        "image/jpeg"
+      ),
+      :expires_in => 10
       }
     end
 
-    puts CachedFile.last.inspect
+    cached_file = CachedFile.last
+    assert_equal "Image_23.jpg", cached_file.original_filename
+    assert_equal 10, (cached_file.expires_at.to_i - cached_file.created_at.to_i)
   end
 
 end

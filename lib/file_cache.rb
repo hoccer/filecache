@@ -6,6 +6,9 @@ module Hoccer
     include Helper
 
     post '/' do
+      params.symbolize_keys!
+      params[:upload].merge!( :expires_in => params.delete(:expires_in) )
+
       authorized_request do
         CachedFile.create params[:upload]
       end
