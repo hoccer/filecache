@@ -7,31 +7,7 @@ module Hoccer
 
     post '/' do
       authorized_request do
-        datafile          = params[:data]
-
-        first_level_dir   = rand(65535).to_s(16).rjust(4, "0")
-        second_level_dir  = rand(65535).to_s(16).rjust(4, "0")
-
-        file_dir          = File.join("files", first_level_dir, second_level_dir)
-
-        FileUtils.mkdir_p( file_dir )
-
-        uuid              = UUID.generate(:compact)
-        extension         = File.extname( datafile[:filename] )
-        file_path         = File.join( file_dir, uuid ) + extension
-
-        File.open(file_path, 'wb') do |file|
-          file.write(datafile[:tempfile].read)
-        end
-
-        CachedFile.create(
-          :uuid               => uuid,
-          :original_filename  => datafile[:filename],
-          :filepath           => file_path,
-          :content_type       => datafile[:type],
-          :created_at         => Time.now,
-          :expires_at         => Time.now + 7.seconds
-        )
+        CachedFile.create params[:data]
       end
     end
 
