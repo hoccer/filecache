@@ -28,6 +28,20 @@ module Hoccer
         block.call
       end
     end
+
+    def port
+      if request.scheme == "http" && request.port == "80"
+        ""
+      elsif request.scheme == "https" && request.port == "443"
+        ""
+      else
+        ":#{request.port}"
+      end
+    end
+
+    def host_and_port
+      "#{request.scheme}://#{request.host}#{port}/"
+    end
   end
 
 end

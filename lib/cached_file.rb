@@ -40,4 +40,8 @@ class CachedFile
 
     file_dir
   end
+
+  def accessible?
+    Time.now.to_i < expires_at.to_i
+  end
 end
