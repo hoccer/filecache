@@ -12,7 +12,30 @@ module Hoccer
       authorized_request do
         cached_file = CachedFile.create( params[:upload] )
 
-        host_and_port + cached_file.uuid
+        if cached_file
+          host_and_port + cached_file.uuid
+        else
+          halt 400
+        end
+      end
+    end
+
+    put %r{/(.+)} do |filename|
+      params.symbolize_keys!
+
+      authorized_request do
+        cached_file = CachedFile.create(
+          :filename   => filename,
+          :type       => "-",
+          :expires_in => params[:expires_in],
+          :tempfile   => env["rack.input"]
+        )
+
+        if cached_file
+          host_and_port + cached_file.uuid
+        else
+          halt 400
+        end
       end
     end
 

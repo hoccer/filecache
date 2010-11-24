@@ -11,11 +11,16 @@ class CachedFile
   field :expires_at,  :type => DateTime
 
   def self.create options
+    if options[:tempfile] && options[:tempfile].respond_to?(:read)
+      file = options[:tempfile]
+    else
+      return false
+    end
 
     uuid              = UUID.generate(:compact)
     extension         = File.extname( options[:filename] )
     file_path         = File.join( file_dir, uuid ) + extension
-    expires_in        = options[:expires_in].to_i || 7
+    expires_in        = options[:expires_in] ? options[:expires_in].to_i : 7
 
     File.open(file_path, 'wb') do |file|
       file.write(options[:tempfile].read)
