@@ -5,6 +5,8 @@ module Hoccer
 
     include Helper
 
+    set :logging, :true
+
     post '/' do
       params.symbolize_keys!
       params[:upload].merge!( :expires_in => params.delete(:expires_in) )
@@ -13,6 +15,7 @@ module Hoccer
         cached_file = CachedFile.create( params[:upload] )
 
         if cached_file
+          status 201
           host_and_port + cached_file.uuid
         else
           halt 400
@@ -32,6 +35,7 @@ module Hoccer
         )
 
         if cached_file
+          status 201
           host_and_port + cached_file.uuid
         else
           halt 400
