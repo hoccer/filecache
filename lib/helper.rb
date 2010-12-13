@@ -30,9 +30,9 @@ module Hoccer
     end
 
     def port
-      if request.scheme == "http" && request.port == "80"
+      if request.scheme == "http" && request.port.to_i == 80
         ""
-      elsif request.scheme == "https" && request.port == "443"
+      elsif request.scheme == "https" && request.port.to_i == 443
         ""
       else
         ":#{request.port}"

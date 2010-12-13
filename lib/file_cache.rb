@@ -5,6 +5,20 @@ module Hoccer
 
     include Helper
 
+    get %r{/new$} do
+      cached_file = CachedFile.generate
+      [host_and_port + cached_file.uuid].to_json
+    end
+
+    get %r{/new/(\d+)$} do |count|
+      urls = []
+      count.to_i.times do
+        cached_file = CachedFile.generate
+        urls << ( host_and_port + cached_file.uuid )
+      end
+      urls.to_json
+    end
+
     post '/' do
       params.symbolize_keys!
       params[:upload].merge!( :expires_in => params.delete(:expires_in) )
@@ -13,6 +27,27 @@ module Hoccer
         cached_file = CachedFile.create( params[:upload] )
 
         if cached_file
+          host_and_port + cached_file.uuid
+        else
+          halt 400
+        end
+      end
+    end
+
+    put %r{/([a-fA-F0-9]{32,32})/(.+)$} do |uuid, filename|
+      params.symbolize_keys!
+
+      authorized_request do
+        cached_file = CachedFile.where(:uuid => uuid).first
+
+        options = {
+          :filename   => filename,
+          :type       => "-",
+          :expires_in => params[:expires_in],
+          :tempfile   => env["rack.input"],
+        }
+
+        if cached_file && cached_file.update_attributes( options )
           host_and_port + cached_file.uuid
         else
           halt 400
