@@ -62,5 +62,9 @@ class FileUploadTest < Test::Unit::TestCase
     cached_file = CachedFile.last
     assert File.exists?( cached_file.absolute_filepath )
     assert_equal "Image_23.jpg", cached_file.original_filename
+
+
+    get last_response.body
+    assert last_response.headers["Content-Disposition"] =~ /Image_23\.jpg/
   end
 end

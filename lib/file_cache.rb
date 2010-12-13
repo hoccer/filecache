@@ -78,7 +78,10 @@ module Hoccer
       file = CachedFile.where(:uuid => uuid).first
 
       if file && file.accessible?
-        send_file File.join( File.dirname( __FILE__), "..", file.filepath )
+        send_file(
+          File.join( File.dirname( __FILE__), "..", file.filepath ),
+          :filename => file.original_filename
+        )
       else
         halt 404
       end
