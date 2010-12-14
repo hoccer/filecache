@@ -11,6 +11,9 @@ class CachedFile
   field :created_at,  :type => DateTime
   field :expires_at,  :type => DateTime
 
+  validates_uniqueness_of :uuid
+  validates_presence_of   :uuid, :original_filename
+
 
   def self.generate
     cached_file = self.new( :uuid => UUID.generate( :compact ) )
@@ -35,26 +38,12 @@ class CachedFile
     file_path
   end
 
-  def update_attributes options
-    file_path   = CachedFile.write_file( uuid, options )
-    expires_in  = options[:expires_in] ? options[:expires_in].to_i : 7
-
-    super(
-      :original_filename  => options[:filename],
-      :filepath           => file_path,
-      :content_type       => options[:type],
-      :created_at         => Time.now,
-      :expires_at         => Time.now + expires_in.seconds
-    )
-  end
-
   def self.create options
-    uuid        = UUID.generate(:compact)
-    file_path   = write_file( uuid, options )
+    file_path   = write_file( options[:uuid], options )
     expires_in  = options[:expires_in] ? options[:expires_in].to_i : 7
 
     super(
-      :uuid               => uuid,
+      :uuid               => options[:uuid],
       :original_filename  => options[:filename],
       :filepath           => file_path,
       :content_type       => options[:type],
