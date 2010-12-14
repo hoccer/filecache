@@ -12,9 +12,11 @@ class CachedFile
   field :expires_at,  :type => DateTime
 
   validates_uniqueness_of :uuid
-  validates_presence_of   :uuid, :original_filename
+  validates_presence_of   :uuid, :filepath, :original_filename
 
   def self.write_file uuid, options
+    return nil unless options[:filename]
+
     if options[:tempfile] && options[:tempfile].respond_to?(:read)
       file = options[:tempfile]
     else
