@@ -14,13 +14,6 @@ class CachedFile
   validates_uniqueness_of :uuid
   validates_presence_of   :uuid, :original_filename
 
-
-  def self.generate
-    cached_file = self.new( :uuid => UUID.generate( :compact ) )
-    cached_file.save
-    cached_file
-  end
-
   def self.write_file uuid, options
     if options[:tempfile] && options[:tempfile].respond_to?(:read)
       file = options[:tempfile]
