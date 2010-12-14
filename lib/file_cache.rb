@@ -7,12 +7,15 @@ module Hoccer
 
     post '/' do
       params.symbolize_keys!
-      params[:upload].merge!( :expires_in => params.delete(:expires_in) )
+      params[:upload].merge!(
+        :expires_in => params.delete(:expires_in),
+        :uuid       => UUID.generate
+      )
 
       authorized_request do
         cached_file = CachedFile.create( params[:upload] )
 
-        if cached_file
+        if cached_file.valid?
           host_and_port + cached_file.uuid
         else
           halt 400

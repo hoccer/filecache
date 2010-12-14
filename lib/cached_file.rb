@@ -21,7 +21,6 @@ class CachedFile
       return false
     end
 
-    uuid      ||= UUID.generate
     extension   = File.extname( options[:filename] )
     file_path   = File.join( file_dir, uuid ) + extension
 
