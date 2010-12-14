@@ -20,7 +20,7 @@ module Hoccer
       end
     end
 
-    put %r{/([a-fA-F0-9]{36,36})$} do |uuid|
+    put %r{/([a-fA-F0-9\-]{36,36})$} do |uuid|
       params.symbolize_keys!
 
       authorized_request do
@@ -41,7 +41,7 @@ module Hoccer
       end
     end
 
-    get %r{/([a-fA-F0-9]{36,36})$} do |uuid|
+    get %r{/([a-fA-F0-9\-]{36,36})$} do |uuid|
       file = CachedFile.where(:uuid => uuid).first
 
       if file && file.accessible?
