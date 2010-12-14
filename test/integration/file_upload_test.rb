@@ -67,4 +67,6 @@ class FileUploadTest < Test::Unit::TestCase
     get last_response.body
     assert last_response.headers["Content-Disposition"] =~ /Image_23\.jpg/
   end
+
+
 end

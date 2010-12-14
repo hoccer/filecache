@@ -42,6 +42,17 @@ module Hoccer
     def host_and_port
       "#{request.scheme}://#{request.host}#{port}/"
     end
+
+    def filename_header
+      begin
+        request.env["HTTP_CONTENT_DISPOSITION"].scan(
+          /filename\=\"(.+)\"/
+        ).flatten.first
+      rescue => e
+        puts "!!!!!! #{e.message}"
+        nil
+      end
+    end
   end
 
 end
