@@ -2,6 +2,21 @@ module Hoccer
 
   module Helper
 
+    def protocol_and_host
+      scheme = request.env["HTTP_X_FORWARDED_PROTO"] || request.scheme
+      "#{scheme}://#{request.host}"
+    end
+
+    def request_uri
+      uri_without_signature = env['REQUEST_URI'].gsub(/\&signature\=.+$/, "")
+
+      if env['REQUEST_URI'] =~ /^http\:\/\//
+        uri_without_signature
+      else
+        protocol_and_host + uri_without_signature
+      end
+    end
+
     def valid_request?
       puts env['REQUEST_URI']
       account   = Account.where( :api_key => params[:api_key] ).first
@@ -9,10 +24,9 @@ module Hoccer
       return false if account.nil?
 
       signature = params.delete(:signature)
-      uri       = env['REQUEST_URI'].gsub(/\&signature\=.+$/, "")
 
       digestor = Digest::HMAC.new(account[:shared_secret], Digest::SHA1)
-      computed_signature = digestor.base64digest(uri)
+      computed_signature = digestor.base64digest(request_uri)
 
       signature == computed_signature
     end
@@ -22,7 +36,11 @@ module Hoccer
         if valid_request?
           block.call
         else
-          halt 401
+          halt(
+            401,
+             {'Content-Type' => 'application/json' },
+             {:error => "Invalid API Key or Signature"}
+          )
         end
       else
         block.call
@@ -30,9 +48,7 @@ module Hoccer
     end
 
     def port
-      if request.scheme == "http" && request.port.to_i == 80
-        ""
-      elsif request.scheme == "https" && request.port.to_i == 443
+      if [80, 443].include?( request.port )
         ""
       else
         ":#{request.port}"
@@ -40,7 +56,7 @@ module Hoccer
     end
 
     def host_and_port
-      "#{request.scheme}://#{request.host}#{port}/"
+      "#{protocol_and_host}/#{port}/"
     end
 
     def filename_header
