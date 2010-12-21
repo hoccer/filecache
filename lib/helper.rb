@@ -39,7 +39,7 @@ module Hoccer
           halt(
             401,
              {'Content-Type' => 'application/json' },
-             {:error => "Invalid API Key or Signature"}
+             {:error => "Invalid API Key or Signature"}.to_json
           )
         end
       else
