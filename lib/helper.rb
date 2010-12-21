@@ -18,13 +18,11 @@ module Hoccer
     end
 
     def valid_request?
-      puts env['REQUEST_URI']
       account   = Account.where( :api_key => params[:api_key] ).first
-
+      puts "fooo"
       return false if account.nil?
 
       signature = params.delete(:signature)
-
       digestor = Digest::HMAC.new(account[:shared_secret], Digest::SHA1)
       computed_signature = digestor.base64digest(request_uri)
 

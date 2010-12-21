@@ -4,8 +4,10 @@ module Hoccer
   class FileCache < Sinatra::Base
 
     include Helper
+    set :logging, :true
 
     post %r{^/(v\d)/} do |version|
+
       params.symbolize_keys!
       params[:upload].merge!(
         :expires_in => params.delete(:expires_in),
