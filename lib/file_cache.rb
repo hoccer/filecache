@@ -5,7 +5,7 @@ module Hoccer
 
     include Helper
 
-    post '/' do
+    post %r{/^(v\d)/} do |version|
       params.symbolize_keys!
       params[:upload].merge!(
         :expires_in => params.delete(:expires_in),
@@ -16,14 +16,14 @@ module Hoccer
         cached_file = CachedFile.create( params[:upload] )
 
         if cached_file.valid?
-          host_and_port + cached_file.uuid
+          host_and_port + "#{version}/" + cached_file.uuid
         else
           halt 400
         end
       end
     end
 
-    put %r{/([a-fA-F0-9\-]{36,36})$} do |uuid|
+    put %r{^/(v\d)/([a-fA-F0-9\-]{36,36})$} do |version, uuid|
       params.symbolize_keys!
 
       authorized_request do
@@ -37,14 +37,14 @@ module Hoccer
 
         cached_file = CachedFile.create( options )
         if cached_file.valid?
-          host_and_port + cached_file.uuid
+          host_and_port + "#{version}/" +  cached_file.uuid
         else
           halt 400
         end
       end
     end
 
-    get %r{/([a-fA-F0-9\-]{36,36})$} do |uuid|
+    get %r{^/(v\d)/([a-fA-F0-9\-]{36,36})$} do |version, uuid|
       file = CachedFile.where(:uuid => uuid).first
 
       if file && file.accessible?
