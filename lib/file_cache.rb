@@ -5,7 +5,7 @@ module Hoccer
 
     include Helper
 
-    post %r{/^(v\d)/} do |version|
+    post %r{^/(v\d)/} do |version|
       params.symbolize_keys!
       params[:upload].merge!(
         :expires_in => params.delete(:expires_in),
