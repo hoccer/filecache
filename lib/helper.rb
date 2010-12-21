@@ -19,7 +19,6 @@ module Hoccer
 
     def valid_request?
       account   = Account.where( :api_key => params[:api_key] ).first
-      puts "fooo"
       return false if account.nil?
 
       signature = params.delete(:signature)
