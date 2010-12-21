@@ -56,7 +56,7 @@ module Hoccer
     end
 
     def host_and_port
-      "#{protocol_and_host}/#{port}/"
+      "#{protocol_and_host}/#{port}"
     end
 
     def filename_header
