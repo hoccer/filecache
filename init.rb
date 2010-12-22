@@ -9,30 +9,20 @@ require 'uuid'
 
 configure :production do
   puts ">>>>>>>>>>>>>>>> PRODUCTION <<<<<<<<<<<<<<<<<"
-  Mongoid.configure do |config|
-    name = "hoccer_development"
-    host = "localhost"
-    config.master = Mongo::Connection.new.db(name)
-    config.persist_in_safe_mode = true
-  end
 end
 
 configure :development do
   puts ">>>>>>>>>>>>>>>> DEVELOPMENT <<<<<<<<<<<<<<<<<"
-  Mongoid.configure do |config|
-    name = "hoccer_development"
-    host = "localhost"
-    config.master = Mongo::Connection.new.db(name)
-    config.persist_in_safe_mode = true
-  end
 end
 
 configure :test do
   puts ">>>>>>>>>>>>>>>> TEST <<<<<<<<<<<<<<<<<"
-  Mongoid.configure do |config|
-    name = "hoccer_test"
-    host = "localhost"
-    config.master = Mongo::Connection.new.db(name)
-    config.persist_in_safe_mode = true
-  end
 end
+
+file_name = File.join(File.dirname(__FILE__), "config", "mongoid.yml")
+@settings = YAML.load_file( file_name )
+
+Mongoid.configure do |config|
+  config.from_hash(@settings[ENV['RACK_ENV']])
+end
+
