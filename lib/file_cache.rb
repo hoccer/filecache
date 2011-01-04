@@ -18,7 +18,7 @@ module Hoccer
         cached_file = CachedFile.create( params[:upload] )
 
         if cached_file.valid?
-          host_and_port + "#{version}/" + cached_file.uuid
+          host_and_port + "/#{version}/" + cached_file.uuid
         else
           halt 400
         end
@@ -39,7 +39,7 @@ module Hoccer
 
         cached_file = CachedFile.create( options )
         if cached_file.valid?
-          host_and_port + "#{version}/" +  cached_file.uuid
+          host_and_port + "/#{version}/" +  cached_file.uuid
         else
           halt 400
         end
