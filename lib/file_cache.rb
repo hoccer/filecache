@@ -6,7 +6,20 @@ module Hoccer
     include Helper
     set :logging, :true
 
+    # checking for options verb before, while it is not available in sinatra
+    # should be replaced in sinatra 1.2
+    before do
+      if request.request_method == 'OPTIONS'
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "POST, PUT"
+        response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-File-Name, Content-Type, Content-Disposition"
+
+        halt 200
+      end
+    end
+
     post %r{^/(v\d)/} do |version|
+      response.headers["Access-Control-Allow-Origin"] = "*"
 
       params.symbolize_keys!
       params[:upload].merge!(
@@ -26,6 +39,7 @@ module Hoccer
     end
 
     put %r{^/(v\d)/([a-fA-F0-9\-]{36,36})$} do |version, uuid|
+      response.headers["Access-Control-Allow-Origin"] = "*"
       params.symbolize_keys!
 
       authorized_request do
