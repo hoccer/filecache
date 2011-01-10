@@ -43,7 +43,6 @@ module Hoccer
 
     put %r{^/(v\d)/([a-fA-F0-9\-]{36,36})$} do |version, uuid|
       params.symbolize_keys!
-      
       if (request.env['HTTP_ORIGIN']) 
         account = Account.where( :api_key => params[:api_key] ).first
         response.headers["Access-Control-Allow-Origin"] = request.env['HTTP_ORIGIN']

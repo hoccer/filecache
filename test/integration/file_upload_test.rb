@@ -30,40 +30,23 @@ class FileUploadTest < Test::Unit::TestCase
     assert_equal 10, (cached_file.expires_at.to_i - cached_file.created_at.to_i)
   end
 
-  # test "get one new url" do
-  #   assert_difference "CachedFile.count", +1 do
-  #     get "/new"
-  #   end
-  # 
-  #   response = JSON.parse( last_response.body )
-  #   assert_equal 1, response.size
-  # end
-  # 
-  # test "get ten new urls" do
-  #   assert_difference "CachedFile.count", +10 do
-  #     get "/new/10"
-  #   end
-  # 
-  #   response = JSON.parse( last_response.body )
-  #   assert_equal 10, response.size
-  # end
-
-  # test "upload to generated uuid" do
-  # 
-  #   upload_uri = "/#{uuid}/Image_23.jpg"
-  # 
-  #   put upload_uri, {:upload => Rack::Test::UploadedFile.new(
-  #     "/Users/hukl/Desktop/Cleanup/Image_23.jpg",
-  #     "image/jpeg"
-  #   )}
-  # 
-  #   cached_file = CachedFile.last
-  #   assert File.exists?( cached_file.absolute_filepath )
-  #   assert_equal "Image_23.jpg", cached_file.original_filename
-  # 
-  #   get last_response.body
-  #   assert last_response.headers["Content-Disposition"] =~ /Image_23\.jpg/
-  # end
+  test "upload to generated uuid" do
+    upload_uri = "/v3/#{uuid}"
+  
+    header "Content-Disposition", "attachment; filename=\"home.jpg\""
+    put upload_uri, {:upload => Rack::Test::UploadedFile.new(
+      "test/fixtures/home.jpg",
+      "image/jpeg"
+    )}
+    
+    assert last_response.ok?, "put should have returned ok"
+    cached_file = CachedFile.last
+    assert File.exists?( cached_file.absolute_filepath )
+    assert_equal "home.jpg", cached_file.original_filename
+  
+    get last_response.body
+    assert last_response.headers["Content-Disposition"] =~ /home\.jpg/
+  end
   
   test "options with Access-Control-Allow-Origin header" do
     header "CONTENT_DISPOSITION", "attachment, filename=bla"
