@@ -7,14 +7,6 @@ class FileUploadTest < Test::Unit::TestCase
     CachedFile.delete_all
   end
 
-  # test "upload params" do
-  #   xxx = {'data' => Rack::Test::UploadedFile.new(
-  #     "/Users/hukl/Desktop/Cleanup/Image_23.jpg",
-  #     "image/jpeg"
-  #   )}
-  # 
-  # end
-  # 
   test "uploading a file" do
     assert_difference "CachedFile.count", +1 do
       post "/v3/", {:upload => Rack::Test::UploadedFile.new(

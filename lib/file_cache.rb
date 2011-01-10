@@ -11,17 +11,16 @@ module Hoccer
     before do
       
       if request.request_method == 'OPTIONS'
-        response.headers["Access-Control-Allow-Origin"] = "*"
-        response.headers["Access-Control-Allow-Methods"] = "POST, PUT"
-        response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-File-Name, Content-Type, Content-Disposition"
+        authorized_request do
+          response.headers["Access-Control-Allow-Methods"] = "POST, PUT"
+          response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-File-Name, Content-Type, Content-Disposition"
 
-        halt 200
+          halt 200
+        end
       end
     end
 
     post %r{^/(v\d)/} do |version|
-      account = Account.where( :api_key => params[:api_key] ).first
-      
       params.symbolize_keys!
       params[:upload].merge!(
         :expires_in => params.delete(:expires_in),
