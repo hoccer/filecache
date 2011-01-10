@@ -74,6 +74,24 @@ class FileUploadTest < Test::Unit::TestCase
 
     assert_equal 401, last_response.status, "put should return 401"
   end
+  
+  test "options return Access-Control-Allow-Origin" do
+    
+    header "CONTENT_DISPOSITION", "attachment, filename=\"home.jpg\""
+    header "ORIGIN", "http://www.hoccer.com"
+   
+
+    request "/v3/#{uuid}?api_key=37d4b750fc95012d14a7109add515cd4",
+                         :method => "OPTIONS", 
+                         :input => {:upload => Rack::Test::UploadedFile.new(
+                           "test/fixtures/home.jpg",
+                           "image/jpeg"
+                          )}
+
+    assert last_response.ok?, "should response ok"
+    assert_equal last_response.headers["Access-Control-Allow-Origin"], "http://www.hoccer.com"
+   
+  end
 
   private 
   def uuid
