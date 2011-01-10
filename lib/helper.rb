@@ -29,11 +29,19 @@ module Hoccer
     end
 
     def authorized_request &block
-      if 
-      
-      
-      
-      if ENV["RACK_ENV"] == "production"
+      if (request.env['HTTP_ORIGIN']) 
+        account = Account.where( :api_key => params[:api_key] ).first
+        if account.websites.include? request.env['HTTP_ORIGIN']
+          response.headers["Access-Control-Allow-Origin"] = request.env['HTTP_ORIGIN']
+          block.call
+        else
+          halt(
+            401,
+            {'Content-Type' => 'application/json' },
+            {:error => "Invalid API Key or Signature"}.to_json
+          )
+        end
+      elsif ENV["RACK_ENV"] == "production"
         if valid_request?
           block.call
         else

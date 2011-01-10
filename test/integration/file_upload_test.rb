@@ -79,14 +79,11 @@ class FileUploadTest < Test::Unit::TestCase
                            )}
 
     end
-    
-    assert_equals 401, last_response.status, "put should return 401"
-  end
-  
-  
-  
-  private 
 
+    assert_equal 401, last_response.status, "put should return 401"
+  end
+
+  private 
   def uuid
     UUID.new.generate
   end

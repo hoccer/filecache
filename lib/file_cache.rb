@@ -22,8 +22,6 @@ module Hoccer
     post %r{^/(v\d)/} do |version|
       account = Account.where( :api_key => params[:api_key] ).first
       
-      response.headers["Access-Control-Allow-Origin"] = params
-
       params.symbolize_keys!
       params[:upload].merge!(
         :expires_in => params.delete(:expires_in),
@@ -43,41 +41,22 @@ module Hoccer
 
     put %r{^/(v\d)/([a-fA-F0-9\-]{36,36})$} do |version, uuid|
       params.symbolize_keys!
-          options = {
-            :uuid       => uuid,
-            :filename   => filename_header,
-            :type       => "-",
-            :expires_in => params[:expires_in],
-            :tempfile   => env["rack.input"],
-          }
+      authorized_request do
+        options = {
+          :uuid       => uuid,
+          :filename   => filename_header,
+          :type       => "-",
+          :expires_in => params[:expires_in],
+          :tempfile   => env["rack.input"],
+        }
 
-          cached_file = CachedFile.create( options )
-          if cached_file.valid?
-            host_and_port + "/#{version}/" +  cached_file.uuid
-          else
-            puts cached_file.errors.inspect
-            halt 400
-          end
+        cached_file = CachedFile.create( options )
+        if cached_file.valid?
+          host_and_port + "/#{version}/" +  cached_file.uuid
+        else
+          halt 400
         end
-      else 
-        authorized_request do
-          options = {
-            :uuid       => uuid,
-            :filename   => filename_header,
-            :type       => "-",
-            :expires_in => params[:expires_in],
-            :tempfile   => env["rack.input"],
-          }
-
-          cached_file = CachedFile.create( options )
-          if cached_file.valid?
-            host_and_port + "/#{version}/" +  cached_file.uuid
-          else
-            halt 400
-          end
-        end        
       end
-
     end
 
     get %r{^/(v\d)/([a-fA-F0-9\-]{36,36})$} do |version, uuid|
