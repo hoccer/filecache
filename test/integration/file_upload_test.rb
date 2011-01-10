@@ -48,15 +48,42 @@ class FileUploadTest < Test::Unit::TestCase
     assert last_response.headers["Content-Disposition"] =~ /home\.jpg/
   end
   
-  test "options with Access-Control-Allow-Origin header" do
-    header "CONTENT_DISPOSITION", "attachment, filename=bla"
+  test "put with ORIGIN should return Access-Control-Allow-Origin header and save file" do
+   
+    header "CONTENT_DISPOSITION", "attachment, filename=\"home.jpg\""
     header "ORIGIN", "http://www.hoccer.com"
    
-    request "/v3/#{uuid}", :method => "PUT", :params => {"api_key" => "37d4b750fc95012d14a7109add515cd4"}
+    assert_difference "CachedFile.count", +1 do
+      request "/v3/#{uuid}?api_key=37d4b750fc95012d14a7109add515cd4",
+                           :method => "PUT", 
+                           :input => {:upload => Rack::Test::UploadedFile.new(
+                             "test/fixtures/home.jpg",
+                             "image/jpeg"
+                           )}
 
+    end
     assert last_response.ok?, "should response ok"
     assert_equal last_response.headers["Access-Control-Allow-Origin"], "http://www.hoccer.com"
   end
+  
+  test "put from wrong origin" do 
+    header "CONTENT_DISPOSITION", "attachment, filename=\"home.jpg\""
+    header "ORIGIN", "http://www.spiegel.de"
+   
+    assert_difference "CachedFile.count", 0 do
+      request "/v3/#{uuid}?api_key=37d4b750fc95012d14a7109add515cd4",
+                           :method => "PUT", 
+                           :input => {:upload => Rack::Test::UploadedFile.new(
+                             "test/fixtures/home.jpg",
+                             "image/jpeg"
+                           )}
+
+    end
+    
+    assert_equals 401, last_response.status, "put should return 401"
+  end
+  
+  
   
   private 
 

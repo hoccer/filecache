@@ -29,6 +29,10 @@ module Hoccer
     end
 
     def authorized_request &block
+      if 
+      
+      
+      
       if ENV["RACK_ENV"] == "production"
         if valid_request?
           block.call
