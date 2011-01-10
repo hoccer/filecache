@@ -76,21 +76,23 @@ class FileUploadTest < Test::Unit::TestCase
   end
   
   test "options return Access-Control-Allow-Origin" do
-    
     header "CONTENT_DISPOSITION", "attachment, filename=\"home.jpg\""
     header "ORIGIN", "http://www.hoccer.com"
    
-
-    request "/v3/#{uuid}?api_key=37d4b750fc95012d14a7109add515cd4",
-                         :method => "OPTIONS", 
-                         :input => {:upload => Rack::Test::UploadedFile.new(
-                           "test/fixtures/home.jpg",
-                           "image/jpeg"
-                          )}
-
+    request "/v3/#{uuid}?api_key=37d4b750fc95012d14a7109add515cd4", :method => "OPTIONS"
+    
     assert last_response.ok?, "should response ok"
     assert_equal last_response.headers["Access-Control-Allow-Origin"], "http://www.hoccer.com"
+  end
+  
+  test "options does not return CORS headers when url not registered" do
+    header "CONTENT_DISPOSITION", "attachment, filename=\"home.jpg\""
+    header "ORIGIN", "http://www.spiegel.com"
    
+    request "/v3/#{uuid}?api_key=37d4b750fc95012d14a7109add515cd4", :method => "OPTIONS"
+    
+    assert_equal 401, last_response.status, "should not authorize call with not registered url"
+    assert_nil last_response.headers["Access-Control-Allow-Origin"]
   end
 
   private 
