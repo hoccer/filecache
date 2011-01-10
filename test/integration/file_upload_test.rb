@@ -5,6 +5,7 @@ class FileUploadTest < Test::Unit::TestCase
 
   def setup
     CachedFile.delete_all
+    Account.delete_all
   end
 
   test "uploading a file" do
@@ -41,6 +42,8 @@ class FileUploadTest < Test::Unit::TestCase
   end
   
   test "put with ORIGIN should return Access-Control-Allow-Origin header and save file" do
+    Account.create({:api_key => "37d4b750fc95012d14a7109add515cd4", 
+                     :websites => ["http://www.hoccer.com", "http://www.facebook.com"] });
    
     header "CONTENT_DISPOSITION", "attachment, filename=\"home.jpg\""
     header "ORIGIN", "http://www.hoccer.com"
@@ -76,6 +79,10 @@ class FileUploadTest < Test::Unit::TestCase
   end
   
   test "options return Access-Control-Allow-Origin" do
+    Account.create({:api_key => "37d4b750fc95012d14a7109add515cd4", 
+                    :websites => ["http://www.hoccer.com", "http://www.facebook.com"] });
+                    
+                    
     header "CONTENT_DISPOSITION", "attachment, filename=\"home.jpg\""
     header "ORIGIN", "http://www.hoccer.com"
    
