@@ -110,7 +110,6 @@ class FileUploadTest < Test::Unit::TestCase
     
     assert_equal 401, last_response.status, "should not authorize call with not registered url"
     assert_nil last_response.headers["Access-Control-Allow-Origin"]
-  
   end
 
   private 
