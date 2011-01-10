@@ -4,7 +4,7 @@ require 'test/unit'
 require 'rack/test'
 require 'sinatra'
 
-set :environment, :test
+ENV['RACK_ENV'] = 'test'
 
 require 'init'
 
