@@ -94,6 +94,17 @@ class FileUploadTest < Test::Unit::TestCase
     assert_equal 401, last_response.status, "should not authorize call with not registered url"
     assert_nil last_response.headers["Access-Control-Allow-Origin"]
   end
+  
+  test "returns 401 on wrong api key" do
+    header "CONTENT_DISPOSITION", "attachment, filename=\"home.jpg\""
+    header "ORIGIN", "http://www.spiegel.com"
+   
+    request "/v3/#{uuid}?api_key=_no_key", :method => "OPTIONS"
+    
+    assert_equal 401, last_response.status, "should not authorize call with not registered url"
+    assert_nil last_response.headers["Access-Control-Allow-Origin"]
+  
+  end
 
   private 
   def uuid

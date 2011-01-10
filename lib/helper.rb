@@ -31,7 +31,7 @@ module Hoccer
     def authorized_request &block
       if (request.env['HTTP_ORIGIN']) 
         account = Account.where( :api_key => params[:api_key] ).first
-        if account.websites.include? request.env['HTTP_ORIGIN']
+        if account && account.websites.include?(request.env['HTTP_ORIGIN'])
           response.headers["Access-Control-Allow-Origin"] = request.env['HTTP_ORIGIN']
           block.call
         else
